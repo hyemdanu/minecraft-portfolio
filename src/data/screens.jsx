@@ -81,8 +81,7 @@ export const SCREENS = [
         <p>
           <strong>This Portfolio</strong> — React + Three.js + Blender. The world is a
           Minecraft scene I baked. This was one of the more personal projects I've made.
-            The chat is powered from gpt-4o-mini. I did not purchase many tokens so please be
-          mindful on the questions asked. The amount of calls are also limited for security reasons.
+            The chat is powered from gpt-4o-mini. The amount of calls are also limited for security reasons.
         </p>
         <p>
           More on my GitHub, LinkedIn, Email, and Resume.
@@ -138,7 +137,7 @@ export const SCREENS = [
             people eating.
         </p>
         <p>
-            <strong>Random Collections</strong> I have over 15 gaming mice, 6 keyboards, and tons of anime figures (that I need
+            <strong>Random Collections</strong> — I have over 15 gaming mice, 6 keyboards, and tons of anime figures (that I need
             to sell). Also have tons of random merch from Ado, Pokemon, and NBA. I have like 12 pairs of basketball shoes.
         </p>
       </>
