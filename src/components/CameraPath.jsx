@@ -76,10 +76,12 @@ export default function CameraPath() {
   useEffect(() => {
     // ~one mouse wheel "click" of deltaY accumulates to STEP and advances one waypoint
     const STEP = 100
-    const onWheel = (e) => {
-      // Ignore scrolls that happen inside an interactive panel (screen / chat)
-      if (e.target?.closest && e.target.closest('.mc-screen, .mc-chat')) return
-      wheelAccum.current += e.deltaY
+    const TOUCH_SCALE = 2.2  // amplify swipe distance to feel natural
+
+    const insideUI = (target) =>
+      target?.closest && target.closest('.mc-screen, .mc-chat, .mc-popup, .mc-toggle, .biz-page, .mc-splash')
+
+    const advance = () => {
       while (Math.abs(wheelAccum.current) >= STEP) {
         const dir = Math.sign(wheelAccum.current)
         targetProgress.current += dir * (1 / TOTAL_WAYPOINTS)
@@ -87,8 +89,39 @@ export default function CameraPath() {
         wheelAccum.current -= dir * STEP
       }
     }
+
+    const onWheel = (e) => {
+      if (insideUI(e.target)) return
+      wheelAccum.current += e.deltaY
+      advance()
+    }
+
+    let lastTouchY = null
+    const onTouchStart = (e) => {
+      if (insideUI(e.target)) { lastTouchY = null; return }
+      if (e.touches.length === 1) lastTouchY = e.touches[0].clientY
+    }
+    const onTouchMove = (e) => {
+      if (lastTouchY === null || e.touches.length !== 1) return
+      const y = e.touches[0].clientY
+      wheelAccum.current += (lastTouchY - y) * TOUCH_SCALE  // swipe up = forward
+      lastTouchY = y
+      advance()
+    }
+    const onTouchEnd = () => { lastTouchY = null }
+
     window.addEventListener('wheel', onWheel, { passive: true })
-    return () => window.removeEventListener('wheel', onWheel)
+    window.addEventListener('touchstart', onTouchStart, { passive: true })
+    window.addEventListener('touchmove', onTouchMove, { passive: true })
+    window.addEventListener('touchend', onTouchEnd, { passive: true })
+    window.addEventListener('touchcancel', onTouchEnd, { passive: true })
+    return () => {
+      window.removeEventListener('wheel', onWheel)
+      window.removeEventListener('touchstart', onTouchStart)
+      window.removeEventListener('touchmove', onTouchMove)
+      window.removeEventListener('touchend', onTouchEnd)
+      window.removeEventListener('touchcancel', onTouchEnd)
+    }
   }, [])
 
   useFrame((_, delta) => {

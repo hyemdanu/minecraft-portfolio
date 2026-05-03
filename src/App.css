@@ -662,3 +662,85 @@ html, body, #root {
   color: #888;
   text-shadow: 2px 2px 0 #000;
 }
+
+/* ===== Mobile (≤ 768px) ===== */
+@media (max-width: 768px) {
+  /* Top-right buttons: smaller and tighter */
+  .mc-toggle {
+    width: 40px;
+    height: 40px;
+    top: 16px;
+    right: 16px;
+  }
+  .mc-toggle--music   { right: 64px; }
+  .mc-toggle--info    { right: 112px; }
+  .mc-toggle--business { right: 160px; }
+  .mc-toggle svg { width: 20px; height: 20px; }
+  .mc-info-q { font-size: 20px; }
+
+  /* Chat: full width minus margin */
+  .mc-chat {
+    width: calc(100vw - 32px);
+    max-width: none;
+    bottom: 16px;
+    left: 16px;
+    font-size: 14px;
+  }
+  .mc-chat__history {
+    max-height: 30vh;
+  }
+  .mc-chat__input { font-size: 14px; }
+
+  /* Splash button: smaller padding so it fits */
+  .mc-splash__btn {
+    font-size: 18px;
+    padding: 14px 28px;
+  }
+  .mc-splash__hints { font-size: 11px; }
+  .mc-splash__bar { width: 80vw; max-width: 320px; }
+
+  /* Business page: tighter padding, smaller header */
+  .biz-header {
+    padding: 12px 16px;
+  }
+  .biz-name { font-size: 16px; }
+  .biz-back {
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+  .biz-body {
+    padding: 24px 16px 60px;
+  }
+  .biz-section h2 { font-size: 12px; }
+  .biz-section { margin-bottom: 28px; }
+  .biz-row {
+    flex-direction: column;
+    gap: 4px;
+  }
+  .biz-row-meta {
+    white-space: normal;
+    font-size: 12px;
+  }
+  .biz-row-title { font-size: 15px; }
+  .biz-contact {
+    font-size: 13px;
+    word-break: break-word;
+  }
+
+  /* Info popup: tighter on mobile */
+  .mc-popup {
+    max-height: 80vh;
+  }
+  .mc-popup__body {
+    font-size: 14px;
+  }
+}
+
+/* Very small screens (≤ 380px): collapse the music + info + business
+   button labels even further */
+@media (max-width: 380px) {
+  .mc-toggle { width: 36px; height: 36px; }
+  .mc-toggle--music   { right: 56px; }
+  .mc-toggle--info    { right: 100px; }
+  .mc-toggle--business { right: 144px; }
+}
