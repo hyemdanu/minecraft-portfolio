@@ -2,7 +2,14 @@ import { useMemo } from 'react'
 import * as THREE from 'three'
 import { useGLTFWithKTX2 } from './useGLTFWithKTX2'
 
-// Andrew Woan's convert function — handles both baked (opaque emissive) and original (transparent) materials
+const CHUNKS = [
+  '/models/wood-transformed.glb',
+  '/models/stone-transformed.glb',
+  '/models/terrain-transformed.glb',
+  '/models/decoration-transformed.glb',
+  '/models/transparent-transformed.glb',
+]
+
 function convertMaterialsToMeshBasicMaterial(materials, alphaTestValue = 0.5) {
   Object.keys(materials).forEach((k) => {
     const m = materials[k]
@@ -29,8 +36,8 @@ function convertMaterialsToMeshBasicMaterial(materials, alphaTestValue = 0.5) {
   return materials
 }
 
-export default function Model(props) {
-  const { scene, materials } = useGLTFWithKTX2('/models/scene.glb')
+function Chunk({ path }) {
+  const { scene, materials } = useGLTFWithKTX2(path)
 
   const processedScene = useMemo(() => {
     convertMaterialsToMeshBasicMaterial(materials)
@@ -42,13 +49,19 @@ export default function Model(props) {
         }
       }
     })
-    // No auto-centering — the camera path was authored against the GLB's
-    // native coordinates. (Previous auto-center was non-idempotent: it ran
-    // twice in StrictMode locally → final pos (0,0,0), but only once in
-    // production → final pos was offset, making the model appear shifted.)
     scene.position.set(0, 0, 0)
     return scene
   }, [scene, materials])
 
-  return <primitive object={processedScene} {...props} />
+  return <primitive object={processedScene} />
+}
+
+export default function Model() {
+  return (
+    <group>
+      {CHUNKS.map((path) => (
+        <Chunk key={path} path={path} />
+      ))}
+    </group>
+  )
 }

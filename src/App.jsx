@@ -62,18 +62,15 @@ export default function App() {
         <CustomSky />
         <Suspense fallback={null}>
           <Model />
-          {!isMobile && (
-            <Sparkles
-              count={400}
-              scale={[80, 50, 80]}
-              position={[0, 15, 0]}
-              size={8}
-              speed={0.4}
-              opacity={1}
-              color="#ffeac9"
-            />
-          )}
-          {/* Cherry blossom petals — locked positions; lighter counts on mobile */}
+          <Sparkles
+            count={isMobile ? 100 : 400}
+            scale={[80, 50, 80]}
+            position={[0, 15, 0]}
+            size={8}
+            speed={0.4}
+            opacity={1}
+            color="#ffeac9"
+          />
           <FallingPetals
             position={[24.5, -8.5, 7.0]}
             radius={9}
@@ -90,7 +87,7 @@ export default function App() {
             color="#d45e6e"
             opacity={0.95}
             glareStrength={1.35}
-            count={isMobile ? 60 : 300}
+            count={isMobile ? 70 : 300}
           />
           <SceneScreens />
         </Suspense>
