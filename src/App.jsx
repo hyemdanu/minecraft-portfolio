@@ -71,40 +71,46 @@ export default function App() {
     <div className="app">
       <Canvas
         camera={{ position: [80, 60, 80], fov: 50, near: 0.1, far: 2500 }}
-        dpr={isMobile ? 1 : [1, 2]}
+        dpr={isMobile ? 0.6 : [1, 2]}
         gl={{ antialias: !isMobile, powerPreference: 'high-performance' }}
+        onCreated={() => debugStore.log('canvas onCreated')}
       >
-        <fog attach="fog" args={['#d8b89c', 8, 80]} />
-        <CustomSky />
+        {!isMobile && <fog attach="fog" args={['#d8b89c', 8, 80]} />}
+        {!isMobile && <CustomSky />}
+        {isMobile && <color attach="background" args={['#9aa1c4']} />}
         <Suspense fallback={null}>
           <Model />
-          <Sparkles
-            count={isMobile ? 100 : 400}
-            scale={[80, 50, 80]}
-            position={[0, 15, 0]}
-            size={8}
-            speed={0.4}
-            opacity={1}
-            color="#ffeac9"
-          />
-          <FallingPetals
-            position={[24.5, -8.5, 7.0]}
-            radius={9}
-            height={39}
-            color="#d45e6e"
-            opacity={0.95}
-            glareStrength={0.6}
-            count={isMobile ? 25 : 100}
-          />
-          <FallingPetals
-            position={[-24.0, -24.5, 9.0]}
-            radius={9}
-            height={60}
-            color="#d45e6e"
-            opacity={0.95}
-            glareStrength={1.35}
-            count={isMobile ? 70 : 300}
-          />
+          {!isMobile && (
+            <>
+              <Sparkles
+                count={400}
+                scale={[80, 50, 80]}
+                position={[0, 15, 0]}
+                size={8}
+                speed={0.4}
+                opacity={1}
+                color="#ffeac9"
+              />
+              <FallingPetals
+                position={[24.5, -8.5, 7.0]}
+                radius={9}
+                height={39}
+                color="#d45e6e"
+                opacity={0.95}
+                glareStrength={0.6}
+                count={100}
+              />
+              <FallingPetals
+                position={[-24.0, -24.5, 9.0]}
+                radius={9}
+                height={60}
+                color="#d45e6e"
+                opacity={0.95}
+                glareStrength={1.35}
+                count={300}
+              />
+            </>
+          )}
           <SceneScreens />
         </Suspense>
         <CameraPath />
