@@ -1,6 +1,6 @@
 import { Billboard, Html } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
-import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { SCREENS } from '../data/screens'
 import { cameraStore, TOTAL_WAYPOINTS } from '../state/cameraStore'
 import { uiStore } from '../state/uiStore'
@@ -39,8 +39,49 @@ function SceneScreen({ screen, currentWp }) {
   const targetOpacity = 1 - smoothstep(0, fadeBand, dist)
   const [opacity, setOpacity] = useState(0)
   const bodyRef = useRef(null)
+  const cleanupRef = useRef(null)
   const { pausedAtScreen } = useSyncExternalStore(autoplayStore.subscribe, autoplayStore.get)
   const isFocusedByAutoplay = pausedAtScreen === screen.id
+
+  // Callback ref — fires every time the element attaches OR detaches
+  // (which happens when the screen fades in/out and the JSX returns null).
+  const setBodyRef = useCallback((el) => {
+    // Tear down previous listeners
+    if (cleanupRef.current) {
+      cleanupRef.current()
+      cleanupRef.current = null
+    }
+    bodyRef.current = el
+    if (!el) return
+
+    let lastY = null
+    const onTouchStart = (e) => {
+      if (e.touches[0]) lastY = e.touches[0].clientY
+    }
+    const onTouchMove = (e) => {
+      if (lastY === null || !e.touches[0]) return
+      const y = e.touches[0].clientY
+      el.scrollTop -= (y - lastY)
+      lastY = y
+      e.stopPropagation()
+    }
+    const onTouchEnd = () => { lastY = null }
+    const onWheel = (e) => e.stopPropagation()
+
+    el.addEventListener('touchstart', onTouchStart, { passive: true })
+    el.addEventListener('touchmove', onTouchMove, { passive: true })
+    el.addEventListener('touchend', onTouchEnd, { passive: true })
+    el.addEventListener('touchcancel', onTouchEnd, { passive: true })
+    el.addEventListener('wheel', onWheel, { passive: false })
+
+    cleanupRef.current = () => {
+      el.removeEventListener('touchstart', onTouchStart)
+      el.removeEventListener('touchmove', onTouchMove)
+      el.removeEventListener('touchend', onTouchEnd)
+      el.removeEventListener('touchcancel', onTouchEnd)
+      el.removeEventListener('wheel', onWheel)
+    }
+  }, [])
 
   useFrame(() => {
     setOpacity((prev) => {
@@ -48,6 +89,7 @@ function SceneScreen({ screen, currentWp }) {
       return Math.abs(next - targetOpacity) < 0.005 ? targetOpacity : next
     })
   })
+
 
   // Auto-scroll body during autoplay dwell at a constant pixels-per-second
   // rate (uniform reading speed regardless of content length). Camera dwell
@@ -111,7 +153,7 @@ function SceneScreen({ screen, currentWp }) {
               </span>
               <span className="mc-screen__title">{screen.title}</span>
             </div>
-            <div className="mc-screen__body" ref={bodyRef}>{screen.content}</div>
+            <div className="mc-screen__body" ref={setBodyRef}>{screen.content}</div>
           </div>
         </Html>
       </group>
