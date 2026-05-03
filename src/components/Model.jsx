@@ -39,14 +39,13 @@ function convertMaterialsToMeshBasicMaterial(materials, alphaTestValue = 0.5) {
 
 function Chunk({ path }) {
   useEffect(() => {
-    debugStore.log(`→ requesting ${path.split('/').pop()}`)
+    debugStore.log(`→ ${path.split('/').pop()}`)
   }, [path])
 
   let gltf
   try {
     gltf = useGLTFWithKTX2(path)
   } catch (e) {
-    // Suspense throws Promises during loading — those aren't real errors. Re-throw silently.
     if (e && typeof e.then === 'function') throw e
     debugStore.err(`load ${path.split('/').pop()}: ${e?.message || e}`)
     throw e
@@ -54,25 +53,20 @@ function Chunk({ path }) {
   const { scene, materials } = gltf
 
   const processedScene = useMemo(() => {
-    try {
-      convertMaterialsToMeshBasicMaterial(materials)
-      let meshCount = 0
-      scene.traverse((child) => {
-        if (child.isMesh) {
-          meshCount += 1
-          const matName = child.material?.name
-          if (matName && materials[matName]) {
-            child.material = materials[matName]
-          }
+    convertMaterialsToMeshBasicMaterial(materials)
+    let meshCount = 0
+    scene.traverse((child) => {
+      if (child.isMesh) {
+        meshCount += 1
+        const matName = child.material?.name
+        if (matName && materials[matName]) {
+          child.material = materials[matName]
         }
-      })
-      scene.position.set(0, 0, 0)
-      debugStore.log(`✓ ${path.split('/').pop()} (${meshCount} meshes)`)
-      return scene
-    } catch (e) {
-      debugStore.err(`process ${path.split('/').pop()}: ${e.message}`)
-      throw e
-    }
+      }
+    })
+    scene.position.set(0, 0, 0)
+    debugStore.log(`✓ ${path.split('/').pop()} (${meshCount} meshes)`)
+    return scene
   }, [scene, materials, path])
 
   return <primitive object={processedScene} />
