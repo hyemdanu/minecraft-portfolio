@@ -46,7 +46,9 @@ function Chunk({ path }) {
   try {
     gltf = useGLTFWithKTX2(path)
   } catch (e) {
-    debugStore.err(`load ${path.split('/').pop()}: ${e.message}`)
+    // Suspense throws Promises during loading — those aren't real errors. Re-throw silently.
+    if (e && typeof e.then === 'function') throw e
+    debugStore.err(`load ${path.split('/').pop()}: ${e?.message || e}`)
     throw e
   }
   const { scene, materials } = gltf
