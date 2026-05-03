@@ -70,7 +70,7 @@ export const SCREENS = [
         </p>
         <p>
           <strong>Lattice Labs / ALEMS EHR</strong> — HIPAA-compliant electronic health
-          record system for a senior care home. React + Spring Boot + AWS. I worked with 8 other devs
+          record system for a senior care home. React + Spring Boot + AWS. I worked with 7 other devs
           and handle most of the backend and security work!
         </p>
         <p>
@@ -85,7 +85,7 @@ export const SCREENS = [
           mindful on the questions asked. The amount of calls are also limited for security reasons.
         </p>
         <p>
-          More on my GitHub, LinkedIn, and Email.
+          More on my GitHub, LinkedIn, Email, and Resume.
         </p>
         <p>
           <a href="https://github.com/hyemdanu" target="_blank" rel="noreferrer">github.com/hyemdanu</a>
