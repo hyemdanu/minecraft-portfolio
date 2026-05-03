@@ -14,6 +14,7 @@ import MusicToggle from './components/MusicToggle'
 import InfoButton from './components/InfoButton'
 import BusinessButton from './components/BusinessButton'
 import LoadingScreen from './components/LoadingScreen'
+import DebugOverlay from './components/DebugOverlay'
 import './App.css'
 
 export default function App() {
@@ -99,6 +100,7 @@ export default function App() {
       <BusinessButton />
       <MinecraftChat />
       <LoadingScreen />
+      <DebugOverlay />
     </div>
   )
 }

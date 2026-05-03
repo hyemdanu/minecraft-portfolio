@@ -1,6 +1,7 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import * as THREE from 'three'
 import { useGLTFWithKTX2 } from './useGLTFWithKTX2'
+import { debugStore } from '../state/debugStore'
 
 const CHUNKS = [
   '/models/wood-transformed.glb',
@@ -37,21 +38,40 @@ function convertMaterialsToMeshBasicMaterial(materials, alphaTestValue = 0.5) {
 }
 
 function Chunk({ path }) {
-  const { scene, materials } = useGLTFWithKTX2(path)
+  useEffect(() => {
+    debugStore.log(`→ requesting ${path.split('/').pop()}`)
+  }, [path])
+
+  let gltf
+  try {
+    gltf = useGLTFWithKTX2(path)
+  } catch (e) {
+    debugStore.err(`load ${path.split('/').pop()}: ${e.message}`)
+    throw e
+  }
+  const { scene, materials } = gltf
 
   const processedScene = useMemo(() => {
-    convertMaterialsToMeshBasicMaterial(materials)
-    scene.traverse((child) => {
-      if (child.isMesh) {
-        const matName = child.material?.name
-        if (matName && materials[matName]) {
-          child.material = materials[matName]
+    try {
+      convertMaterialsToMeshBasicMaterial(materials)
+      let meshCount = 0
+      scene.traverse((child) => {
+        if (child.isMesh) {
+          meshCount += 1
+          const matName = child.material?.name
+          if (matName && materials[matName]) {
+            child.material = materials[matName]
+          }
         }
-      }
-    })
-    scene.position.set(0, 0, 0)
-    return scene
-  }, [scene, materials])
+      })
+      scene.position.set(0, 0, 0)
+      debugStore.log(`✓ ${path.split('/').pop()} (${meshCount} meshes)`)
+      return scene
+    } catch (e) {
+      debugStore.err(`process ${path.split('/').pop()}: ${e.message}`)
+      throw e
+    }
+  }, [scene, materials, path])
 
   return <primitive object={processedScene} />
 }
