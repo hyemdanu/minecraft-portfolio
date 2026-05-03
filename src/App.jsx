@@ -70,8 +70,9 @@ export default function App() {
   return (
     <div className="app">
       <Canvas
+        flat
         camera={{ position: [80, 60, 80], fov: 50, near: 0.1, far: 2500 }}
-        dpr={isMobile ? 0.6 : [1, 2]}
+        dpr={isMobile ? 1 : [1, 2]}
         gl={{ antialias: !isMobile, powerPreference: 'high-performance' }}
         onCreated={() => debugStore.log('canvas onCreated')}
       >
