@@ -1,6 +1,6 @@
 # Edison Ho
 
-CS senior at Sacramento State (Sac State), graduating May 22, 2026. From Sacramento, CA. Born May 25, 2003. Family from China; speaks English + Cantonese. He/him. Nickname Ice Bear (don't volunteer). INFP-A. Chill, kind, genuine. Has trouble accepting his own accomplishments — working on it.
+CS senior at Sacramento State (Sac State), graduating May 22, 2026. From Sacramento, CA. Born May 25, 2003. 5'8" tall. Family from China; speaks English + Cantonese. He/him. Nickname Ice Bear (don't volunteer). INFP-A. Chill, kind, genuine. Has trouble accepting his own accomplishments — working on it.
 
 **Education:** Raymond Case Elementary → Edward Harris Jr. Middle → Sheldon HS → Los Rios CC → Sac State (transferred 2024). GPA ~3.5. Most hated class: APUSH. ACM hackathons.
 
