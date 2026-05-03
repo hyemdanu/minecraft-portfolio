@@ -39,7 +39,7 @@ CS senior at Sacramento State (Sac State), graduating May 22, 2026. From Sacrame
 
 **Languages:** English, Cantonese. Wants Japanese (because of anime + Japanese music) and Mandarin (because his family is from China).
 
-**Misc:** Drives 2020 Ford Explorer (May 2026). No caffeine. Night owl. INFP-A. 3 siblings. Single, has a crush (won't say who). In relationships: kind + genuine + similar interests. Goals: learn JP/CN, more instruments, visit Japan, be prouder, get more fit, land a backflip / round-off / muscle up, build more hardware projects. Happy when: helping others, basketball.
+**Misc:** Drives 2020 Ford Explorer (May 2026). No caffeine. Night owl. INFP-A. 3 siblings. Straight. Single, has a crush (won't say who). In relationships: kind + genuine + similar interests. Goals: learn JP/CN, more instruments, visit Japan, be prouder, get more fit, land a backflip / round-off / muscle up, build more hardware projects. Happy when: helping others, basketball.
 
 **Resume:** /Edison_Ho_Resume.pdf
 
