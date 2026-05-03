@@ -3,6 +3,8 @@ import { Sparkles } from '@react-three/drei'
 import { Suspense, useEffect } from 'react'
 import { sfx } from './state/sfxStore'
 import { useIsMobile } from './hooks/useIsMobile'
+import { debugStore } from './state/debugStore'
+import DebugProbes from './components/DebugProbes'
 import Model from './components/Model'
 import CameraPath from './components/CameraPath'
 import CustomSky from './components/CustomSky'
@@ -19,6 +21,19 @@ import './App.css'
 
 export default function App() {
   const isMobile = useIsMobile()
+
+  useEffect(() => {
+    debugStore.log(`App mounted (mobile=${isMobile})`)
+    // Visibility/freeze tracking
+    const onVis = () => debugStore.log(`visibility: ${document.visibilityState}`)
+    const onFreeze = () => debugStore.log(`page frozen by browser`)
+    document.addEventListener('visibilitychange', onVis)
+    document.addEventListener('freeze', onFreeze)
+    return () => {
+      document.removeEventListener('visibilitychange', onVis)
+      document.removeEventListener('freeze', onFreeze)
+    }
+  }, [isMobile])
 
   useEffect(() => {
     const onClick = (e) => {
@@ -93,6 +108,7 @@ export default function App() {
           <SceneScreens />
         </Suspense>
         <CameraPath />
+        <DebugProbes />
       </Canvas>
       <ScreenToggle />
       <MusicToggle />
