@@ -22,7 +22,7 @@ function readUsage() {
 }
 
 function writeUsage(usage) {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(usage)) } catch {}
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(usage)) } catch { /* ignore */ }
 }
 
 // Parse a duration like "1m45.5s" or "8.2s" or "45s" into seconds
@@ -67,7 +67,7 @@ async function parseRetryWait(res) {
       const msg = body?.error?.message || ''
       const m = msg.match(/try again in\s+([\d.]+\s*m?\s*[\d.]*s?)/i)
       if (m) seconds = durationToSeconds(m[1])
-    } catch {}
+    } catch { /* ignore */ }
   }
   return formatSeconds(seconds)
 }
@@ -75,10 +75,29 @@ async function parseRetryWait(res) {
 export default function MinecraftChat() {
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
-  const [open, setOpen] = useState(true)
+  const [focused, setFocused] = useState(false)
+  const [keyboardOffset, setKeyboardOffset] = useState(0)
   const inputRef = useRef(null)
   const scrollRef = useRef(null)
   const hpRef = useRef(null)
+
+  // Track on-screen keyboard via VisualViewport so the chat can sit just
+  // above it on mobile. iOS keyboard occludes ~half the screen otherwise.
+  useEffect(() => {
+    const vv = window.visualViewport
+    if (!vv) return
+    const update = () => {
+      const offset = Math.max(0, window.innerHeight - vv.height - vv.offsetTop)
+      setKeyboardOffset(offset)
+    }
+    vv.addEventListener('resize', update)
+    vv.addEventListener('scroll', update)
+    update()
+    return () => {
+      vv.removeEventListener('resize', update)
+      vv.removeEventListener('scroll', update)
+    }
+  }, [])
 
   // Press T to focus chat (like Minecraft)
   useEffect(() => {
@@ -86,7 +105,6 @@ export default function MinecraftChat() {
       if (e.key === 't' || e.key === 'T') {
         if (document.activeElement?.tagName !== 'INPUT') {
           e.preventDefault()
-          setOpen(true)
           setTimeout(() => inputRef.current?.focus(), 0)
         }
       }
@@ -295,7 +313,7 @@ ${edisonProfile}
         try {
           const body = await res.clone().json()
           console.warn('OpenAI rate-limit body:', body?.error?.message || body)
-        } catch {}
+        } catch { /* ignore */ }
         const tail = wait ? ` Try again in ${wait}.` : ''
         setMessages((m) => [...m, { type: 'ai', name: 'EdisonBot', text: `EdisonBot is tired.${tail}` }])
         return
@@ -332,7 +350,21 @@ ${edisonProfile}
   }, [])
 
   return (
-    <div className="mc-chat" ref={chatRef}>
+    <div
+      className={`mc-chat ${focused ? 'is-focused' : ''}`}
+      ref={chatRef}
+      style={focused && keyboardOffset > 0 ? { bottom: keyboardOffset + 16 } : undefined}
+    >
+      {focused && (
+        <button
+          className="mc-chat__close"
+          type="button"
+          onClick={() => inputRef.current?.blur()}
+          aria-label="Close chat"
+        >
+          ×
+        </button>
+      )}
       {messages.length > 0 && <div className="mc-chat__history" ref={scrollRef}>
         {messages.map((m, i) => (
           <div key={i} className={`mc-msg mc-msg--${m.type}`}>
@@ -352,6 +384,8 @@ ${edisonProfile}
           value={input}
           maxLength={256}
           placeholder="Ask about Edison..."
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === 'Enter') send()

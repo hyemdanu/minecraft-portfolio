@@ -2,6 +2,9 @@ import { useMemo, useRef, useEffect } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import { cameraStore, TOTAL_WAYPOINTS } from '../state/cameraStore'
+import { autoplayStore, autoplayDwell, autoplayActivity } from '../state/autoplayStore'
+import { pathSamples } from '../state/pathSamples'
+import { SCREENS } from '../data/screens'
 
 const WAYPOINTS = [
   { position: [20.07, 9.81, -19.98],   target: [-4.35, 3.14, -14.93] },
@@ -46,10 +49,6 @@ const WAYPOINTS = [
   { position: [19.79, 8.76, -20.51],   target: [17.23, 6.51, 9.3] },
 ]
 
-// Densely-sampled look-at targets — 120 evenly-spaced points along the path.
-// Screens use these as their anchor positions (default = camera's look-at at that waypoint).
-export const DENSE_TARGETS = []
-
 export default function CameraPath() {
   const { camera } = useThree()
 
@@ -59,10 +58,13 @@ export default function CameraPath() {
     const pc = new THREE.CatmullRomCurve3(positions, true, 'catmullrom', 0.5)
     const tc = new THREE.CatmullRomCurve3(targets, true, 'catmullrom', 0.5)
 
-    DENSE_TARGETS.length = 0
+    // Sample 120 evenly-spaced look-at targets along the curve so screens
+    // can anchor themselves to "where the camera is looking" at each waypoint.
+    const samples = []
     for (let i = 0; i < TOTAL_WAYPOINTS; i++) {
-      DENSE_TARGETS.push(tc.getPointAt(i / TOTAL_WAYPOINTS).toArray())
+      samples.push(tc.getPointAt(i / TOTAL_WAYPOINTS).toArray())
     }
+    pathSamples.targets = samples
 
     return { posCurve: pc, targetCurve: tc }
   }, [])
@@ -72,6 +74,8 @@ export default function CameraPath() {
   const lookAtVec = useRef(new THREE.Vector3())
   const lastWaypointIdx = useRef(-1)
   const wheelAccum = useRef(0)
+  const lastTargetProgress = useRef(0)
+  const dwellingAt = useRef(null)
 
   useEffect(() => {
     // ~one mouse wheel "click" of deltaY accumulates to STEP and advances one waypoint
@@ -82,11 +86,17 @@ export default function CameraPath() {
       target?.closest && target.closest('.mc-screen, .mc-chat, .mc-popup, .mc-toggle, .biz-page, .mc-splash')
 
     const advance = () => {
+      let moved = false
       while (Math.abs(wheelAccum.current) >= STEP) {
         const dir = Math.sign(wheelAccum.current)
         targetProgress.current += dir * (1 / TOTAL_WAYPOINTS)
         targetProgress.current = ((targetProgress.current % 1) + 1) % 1
         wheelAccum.current -= dir * STEP
+        moved = true
+      }
+      // Any user-driven advance cancels autoplay
+      if (moved && autoplayStore.get().autoplayOn) {
+        autoplayStore.set({ autoplayOn: false, pausedAtScreen: null })
       }
     }
 
@@ -125,6 +135,58 @@ export default function CameraPath() {
   }, [])
 
   useFrame((_, delta) => {
+    const auto = autoplayStore.get()
+
+    // ---------- autoplay advance ----------
+    if (auto.autoplayOn) {
+      // Are we at (or close to) a screen anchor? Pause to read.
+      // SceneScreen extends autoplayDwell.remaining so scroll has time to finish.
+      if (autoplayDwell.remaining > 0) {
+        autoplayDwell.remaining -= delta
+        if (autoplayDwell.remaining <= 0) {
+          autoplayDwell.remaining = 0
+          // resume — nudge past the screen so we don't immediately re-trigger
+          targetProgress.current += 2 / TOTAL_WAYPOINTS
+          targetProgress.current = ((targetProgress.current % 1) + 1) % 1
+          dwellingAt.current = null
+          autoplayStore.set({ pausedAtScreen: null })
+        }
+      } else {
+        // Constant forward speed — full loop in ~75 seconds
+        targetProgress.current += delta * (1 / 75)
+        targetProgress.current = ((targetProgress.current % 1) + 1) % 1
+
+        // Check if we just reached a screen anchor
+        const nearestIdxNow = Math.round(targetProgress.current * TOTAL_WAYPOINTS) % TOTAL_WAYPOINTS
+        const screenHere = SCREENS.find((s) => {
+          const a = (s.anchorWaypoint - 1 + TOTAL_WAYPOINTS) % TOTAL_WAYPOINTS
+          return a === nearestIdxNow
+        })
+        if (screenHere && dwellingAt.current !== screenHere.id) {
+          dwellingAt.current = screenHere.id
+          // Initial small dwell. SceneScreen will extend this if it needs
+          // time to scroll its body content.
+          autoplayDwell.remaining = 1.5
+          autoplayStore.set({ pausedAtScreen: screenHere.id })
+        }
+      }
+    } else {
+      autoplayDwell.remaining = 0
+      dwellingAt.current = null
+    }
+
+    // ---------- direction (forward / reverse) ----------
+    let dProg = targetProgress.current - lastTargetProgress.current
+    if (dProg > 0.5) dProg -= 1
+    if (dProg < -0.5) dProg += 1
+    if (Math.abs(dProg) > 0.0001) {
+      const newDir = dProg > 0 ? 1 : -1
+      if (newDir !== auto.direction) autoplayStore.set({ direction: newDir })
+      if (newDir === -1) autoplayActivity.lastReverseMs = performance.now()
+    }
+    lastTargetProgress.current = targetProgress.current
+
+    // ---------- smooth camera follow ----------
     let diff = targetProgress.current - currentProgress.current
     if (diff > 0.5) diff -= 1
     if (diff < -0.5) diff += 1

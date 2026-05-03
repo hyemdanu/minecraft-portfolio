@@ -1,7 +1,6 @@
-import { useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 import * as THREE from 'three'
 import { useGLTFWithKTX2 } from './useGLTFWithKTX2'
-import { debugStore } from '../state/debugStore'
 
 const CHUNKS = [
   '/models/wood-transformed.glb',
@@ -11,11 +10,21 @@ const CHUNKS = [
   '/models/transparent-transformed.glb',
 ]
 
+// Make Minecraft pixel-art bakes crisp: nearest-neighbor magnification.
+function makeCrisp(tex) {
+  if (!tex) return
+  tex.magFilter = THREE.NearestFilter
+  tex.minFilter = THREE.LinearMipmapLinearFilter
+  tex.anisotropy = 4
+  tex.needsUpdate = true
+}
+
 function convertMaterialsToMeshBasicMaterial(materials, alphaTestValue = 0.5) {
   Object.keys(materials).forEach((k) => {
     const m = materials[k]
     if (m.emissiveMap) {
       const map = m.emissiveMap
+      makeCrisp(map)
       const needsAlpha = map.format === THREE.RGBAFormat
       materials[k] = new THREE.MeshBasicMaterial({
         map,
@@ -25,6 +34,7 @@ function convertMaterialsToMeshBasicMaterial(materials, alphaTestValue = 0.5) {
         depthWrite: true,
       })
     } else {
+      makeCrisp(m.map)
       materials[k] = new THREE.MeshBasicMaterial({
         map: m.map,
         transparent: true,
@@ -38,26 +48,12 @@ function convertMaterialsToMeshBasicMaterial(materials, alphaTestValue = 0.5) {
 }
 
 function Chunk({ path }) {
-  useEffect(() => {
-    debugStore.log(`→ ${path.split('/').pop()}`)
-  }, [path])
-
-  let gltf
-  try {
-    gltf = useGLTFWithKTX2(path)
-  } catch (e) {
-    if (e && typeof e.then === 'function') throw e
-    debugStore.err(`load ${path.split('/').pop()}: ${e?.message || e}`)
-    throw e
-  }
-  const { scene, materials } = gltf
+  const { scene, materials } = useGLTFWithKTX2(path)
 
   const processedScene = useMemo(() => {
     convertMaterialsToMeshBasicMaterial(materials)
-    let meshCount = 0
     scene.traverse((child) => {
       if (child.isMesh) {
-        meshCount += 1
         const matName = child.material?.name
         if (matName && materials[matName]) {
           child.material = materials[matName]
@@ -65,9 +61,8 @@ function Chunk({ path }) {
       }
     })
     scene.position.set(0, 0, 0)
-    debugStore.log(`✓ ${path.split('/').pop()} (${meshCount} meshes)`)
     return scene
-  }, [scene, materials, path])
+  }, [scene, materials])
 
   return <primitive object={processedScene} />
 }

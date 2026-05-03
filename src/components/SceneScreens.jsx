@@ -1,10 +1,11 @@
 import { Billboard, Html } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
-import { useState, useSyncExternalStore } from 'react'
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { SCREENS } from '../data/screens'
 import { cameraStore, TOTAL_WAYPOINTS } from '../state/cameraStore'
 import { uiStore } from '../state/uiStore'
-import { DENSE_TARGETS } from './CameraPath'
+import { autoplayStore, autoplayDwell } from '../state/autoplayStore'
+import { pathSamples } from '../state/pathSamples'
 
 // Cyclic distance between two waypoint indices on the looped path
 function cyclicDistance(a, b, total) {
@@ -35,10 +36,12 @@ function SceneScreen({ screen, currentWp }) {
   const fadeBand = screen.fadeBand ?? 6
   const dist = cyclicDistance(currentWp, anchorIdx, TOTAL_WAYPOINTS)
 
-  // 1 when at anchor, 0 once dist >= fadeBand, smooth in between
   const targetOpacity = 1 - smoothstep(0, fadeBand, dist)
-
   const [opacity, setOpacity] = useState(0)
+  const bodyRef = useRef(null)
+  const { pausedAtScreen } = useSyncExternalStore(autoplayStore.subscribe, autoplayStore.get)
+  const isFocusedByAutoplay = pausedAtScreen === screen.id
+
   useFrame(() => {
     setOpacity((prev) => {
       const next = prev + (targetOpacity - prev) * 0.12
@@ -46,8 +49,39 @@ function SceneScreen({ screen, currentWp }) {
     })
   })
 
+  // Auto-scroll body during autoplay dwell at a constant pixels-per-second
+  // rate (uniform reading speed regardless of content length). Camera dwell
+  // is extended to match.
+  useEffect(() => {
+    if (!isFocusedByAutoplay) return
+    const el = bodyRef.current
+    if (!el) return
+    el.scrollTop = 0
+
+    const SCROLL_SPEED = 50              // px/sec — reading-friendly
+    const READ_BUFFER = 1.5               // sec held at top before scrolling starts (and at bottom after)
+    const overflow = el.scrollHeight - el.clientHeight
+    const scrollDuration = Math.max(0, overflow / SCROLL_SPEED)
+    const totalDwell = READ_BUFFER + scrollDuration + READ_BUFFER
+
+    // Tell the camera to wait this long
+    autoplayDwell.remaining = Math.max(autoplayDwell.remaining, totalDwell)
+
+    if (overflow <= 4) return  // nothing to scroll, just dwell
+
+    const startTime = performance.now() + READ_BUFFER * 1000
+    const tick = () => {
+      const elapsed = (performance.now() - startTime) / 1000
+      const t = Math.max(0, Math.min(1, elapsed / scrollDuration))
+      if (bodyRef.current === el) el.scrollTop = overflow * t
+      if (t < 1 && bodyRef.current === el) requestAnimationFrame(tick)
+    }
+    const raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [isFocusedByAutoplay])
+
   // Resolve 3D position: explicit prop wins, else use the path target at this waypoint
-  const basePos = screen.position || DENSE_TARGETS[anchorIdx] || [0, 10, 0]
+  const basePos = screen.position || pathSamples.targets[anchorIdx] || [0, 10, 0]
   const off = screen.offset || [0, 0, 0]
   const position = [basePos[0] + off[0], basePos[1] + off[1], basePos[2] + off[2]]
 
@@ -77,7 +111,7 @@ function SceneScreen({ screen, currentWp }) {
               </span>
               <span className="mc-screen__title">{screen.title}</span>
             </div>
-            <div className="mc-screen__body">{screen.content}</div>
+            <div className="mc-screen__body" ref={bodyRef}>{screen.content}</div>
           </div>
         </Html>
       </group>

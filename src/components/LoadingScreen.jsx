@@ -1,18 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useProgress } from '@react-three/drei'
 import { musicStore } from '../state/musicStore'
-import { debugStore } from '../state/debugStore'
 
 export default function LoadingScreen() {
-  const { progress, active, item, total, loaded } = useProgress()
+  const { progress } = useProgress()
   const [closing, setClosing] = useState(false)
   const [hidden, setHidden] = useState(false)
   const [ready, setReady] = useState(false)
-
-  useEffect(() => {
-    const itemName = item ? item.split('/').pop() : ''
-    debugStore.log(`progress: ${Math.round(progress)}% active=${active} ${loaded}/${total} | ${itemName}`)
-  }, [progress, active, item, loaded, total])
 
   // Latch ready as soon as progress hits 100% the first time — don't reset it
   // if more loads come in. Otherwise oscillating progress would never let the
@@ -20,22 +14,15 @@ export default function LoadingScreen() {
   useEffect(() => {
     if (ready) return
     if (progress >= 100) {
-      const t = setTimeout(() => {
-        setReady(true)
-        debugStore.log(`splash ready (Join button visible)`)
-      }, 250)
+      const t = setTimeout(() => setReady(true), 250)
       return () => clearTimeout(t)
     }
   }, [progress, ready])
 
   const join = () => {
-    debugStore.log(`Join clicked → starting music + closing splash`)
     musicStore.play()
     setClosing(true)
-    setTimeout(() => {
-      setHidden(true)
-      debugStore.log(`splash hidden, scene fully visible`)
-    }, 700)
+    setTimeout(() => setHidden(true), 700)
   }
 
   if (hidden) return null
@@ -49,7 +36,7 @@ export default function LoadingScreen() {
               Join Edison's World
             </button>
             <div className="mc-splash__hints">
-              <div>Best viewed on a computer or iPad</div>
+              <div>Best viewed on a computer for a better experience</div>
               <div>Scroll down to explore</div>
             </div>
           </>
