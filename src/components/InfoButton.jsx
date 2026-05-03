@@ -64,11 +64,6 @@ export default function InfoButton() {
                 <strong>Build time</strong> — 50–100 hours, mostly spent learning
                 Blender (baking + UV maps were the worst part).
               </p>
-              <p>
-                Built with React, Vite, React Three Fiber, and Blender. The 3D
-                world is a Minecraft scene exported via Mineways and lighting-baked
-                in Blender Cycles. The chat runs on Groq's Llama.
-              </p>
             </div>
           </div>
         </div>

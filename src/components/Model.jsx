@@ -42,13 +42,11 @@ export default function Model(props) {
         }
       }
     })
-
-    const box = new THREE.Box3().setFromObject(scene)
-    const center = box.getCenter(new THREE.Vector3())
-    scene.position.x = -center.x
-    scene.position.y = -box.min.y
-    scene.position.z = -center.z
-
+    // No auto-centering — the camera path was authored against the GLB's
+    // native coordinates. (Previous auto-center was non-idempotent: it ran
+    // twice in StrictMode locally → final pos (0,0,0), but only once in
+    // production → final pos was offset, making the model appear shifted.)
+    scene.position.set(0, 0, 0)
     return scene
   }, [scene, materials])
 
