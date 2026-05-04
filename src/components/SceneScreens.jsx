@@ -64,12 +64,13 @@ function SceneScreen({ screen, currentWp }) {
       el.scrollTop -= (y - lastY)
       lastY = y
       e.stopPropagation()
+      e.preventDefault()  // blocks browser pull-to-refresh + native overscroll
     }
     const onTouchEnd = () => { lastY = null }
     const onWheel = (e) => e.stopPropagation()
 
     el.addEventListener('touchstart', onTouchStart, { passive: true })
-    el.addEventListener('touchmove', onTouchMove, { passive: true })
+    el.addEventListener('touchmove', onTouchMove, { passive: false })
     el.addEventListener('touchend', onTouchEnd, { passive: true })
     el.addEventListener('touchcancel', onTouchEnd, { passive: true })
     el.addEventListener('wheel', onWheel, { passive: false })

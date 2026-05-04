@@ -13,6 +13,7 @@ import ScreenToggle from './components/ScreenToggle'
 import MusicToggle from './components/MusicToggle'
 import AutoplayToggle from './components/AutoplayToggle'
 import ReverseIndicator from './components/ReverseIndicator'
+import AutoplayMobileScreen from './components/AutoplayMobileScreen'
 import InfoButton from './components/InfoButton'
 import BusinessButton from './components/BusinessButton'
 import LoadingScreen from './components/LoadingScreen'
@@ -102,6 +103,7 @@ export default function App() {
       <InfoButton />
       <BusinessButton />
       <ReverseIndicator />
+      <AutoplayMobileScreen />
       <MinecraftChat />
       <LoadingScreen />
     </div>
