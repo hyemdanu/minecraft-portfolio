@@ -192,7 +192,7 @@ export const SCREENS = [
             songs. Mandarin since my family is from China.
         </p>
         <p>
-          <strong>Music</strong> — I used to play the guitar a little bur I forgot pretty much everything. I'll try to commit to learning the piano.
+          <strong>Music</strong> — I used to play the guitar a little but I forgot pretty much everything. I'll try to commit to learning the piano.
         </p>
         <p>
           <strong>Fitness</strong> — Been trying to cosplay as Inosuke since forever. Still need to learn to do a backflip
