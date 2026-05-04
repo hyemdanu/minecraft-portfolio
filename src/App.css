@@ -270,37 +270,6 @@ html, body, #root {
   color: #444;
 }
 
-/* Centered 2D screen overlay shown during autoplay on mobile */
-.autoplay-mobile-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 90;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-  padding: 24px 16px;
-  background: rgba(0, 0, 0, 0.35);
-  animation: autoplay-fade-in 250ms ease-out;
-}
-.autoplay-mobile-screen {
-  pointer-events: auto;
-  max-width: 92vw;
-  width: 92vw;
-  max-height: 70vh;
-  display: flex;
-  flex-direction: column;
-}
-.autoplay-mobile-screen .mc-screen__body {
-  max-height: none;
-  flex: 1;
-  overscroll-behavior: contain;
-}
-@keyframes autoplay-fade-in {
-  from { opacity: 0 }
-  to   { opacity: 1 }
-}
-
 /* Subtle text shown when scrolling backward through the path */
 .reverse-indicator {
   position: fixed;
