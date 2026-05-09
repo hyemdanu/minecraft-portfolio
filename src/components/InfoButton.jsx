@@ -120,7 +120,7 @@ export default function InfoButton() {
 
               <h3 className="info-section">Chat (bottom-left)</h3>
               <p>
-                Ask EdisonBot. Can not guarantee all information is accurate but it is pretty accurate. Also the amount of tokens is limited per month. So if EdisonBot is tired, all of the tokens have probably been used.
+                Ask EdisonBot. Can not guarantee all information is accurate. Also the amount of tokens is limited per month. So if EdisonBot is tired, all of the tokens have probably been used.
               </p>
 
               <h3 className="info-section">Credits</h3>
@@ -129,6 +129,9 @@ export default function InfoButton() {
               <p>
                 <strong>Build time</strong> — 50–100 hour because of learning blender (Baking + UV Maps were difficult)
               </p>
+                <p>
+                    <strong>Inspiration</strong> — This site was inspired by Andrew Woan's 3D Minecraft Folio.
+                </p>
             </div>
           </div>
         </div>
