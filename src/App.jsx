@@ -1,6 +1,7 @@
 import { Canvas } from '@react-three/fiber'
 import { Sparkles } from '@react-three/drei'
 import { Suspense, useEffect } from 'react'
+import { Analytics } from '@vercel/analytics/react'
 import { sfx } from './state/sfxStore'
 import { useIsMobile } from './hooks/useIsMobile'
 import Model from './components/Model'
@@ -104,6 +105,7 @@ export default function App() {
       <ReverseIndicator />
       <MinecraftChat />
       <LoadingScreen />
+      <Analytics />
     </div>
   )
 }
