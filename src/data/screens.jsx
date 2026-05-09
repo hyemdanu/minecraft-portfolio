@@ -157,7 +157,7 @@ export const SCREENS = [
       <>
         <p>Thanks for scrolling through my world</p>
         <p>
-          WIth the theme of the site, I kept it more on the casual side. I hope you learned a little more about me. Here is my links and contacts.
+          With the theme of the site, I kept it more on the casual side. I hope you learned a little more about me. Here is my links and contacts.
         </p>
         <p>
           <a href="mailto:hoedison2003@gmail.com">hoedison2003@gmail.com</a>
