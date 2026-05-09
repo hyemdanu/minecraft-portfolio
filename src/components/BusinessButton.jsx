@@ -154,8 +154,7 @@ function BusinessPage({ onClose }) {
           <h2>Goals</h2>
           <p>
             Looking for full-time technical roles starting May 2026 — open to full-stack, backend,
-            frontend, IT support, QA, and database roles. Long-term interest in cybersecurity
-            (SOC analyst, penetration testing, AI security). Open to remote, hybrid, or on-site
+            frontend, IT support, QA, and database roles. Long-term interest in roles across security operations (SOC analyst, incident response), offensive security (penetration testing, red team), and emerging areas like AI/ML security and application security. Open to remote, hybrid, or on-site
             in California.
           </p>
         </section>

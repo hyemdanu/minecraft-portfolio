@@ -101,7 +101,7 @@ function SceneScreen({ screen, currentWp }) {
     if (!el) return
     el.scrollTop = 0
 
-    const SCROLL_SPEED = 50              // px/sec — reading-friendly
+    const SCROLL_SPEED = 20              // px/sec — slow, comfortable reading pace
     const READ_BUFFER = 1.5               // sec held at top before scrolling starts (and at bottom after)
     const overflow = el.scrollHeight - el.clientHeight
     const scrollDuration = Math.max(0, overflow / SCROLL_SPEED)

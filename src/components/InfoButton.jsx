@@ -120,7 +120,7 @@ export default function InfoButton() {
 
               <h3 className="info-section">Chat (bottom-left)</h3>
               <p>
-                Ask EdisonBot. Can not guarantee all information is accurate but it is pretty accurate.
+                Ask EdisonBot. Can not guarantee all information is accurate but it is pretty accurate. Also the amount of tokens is limited per month. So if EdisonBot is tired, all of the tokens have probably been used.
               </p>
 
               <h3 className="info-section">Credits</h3>

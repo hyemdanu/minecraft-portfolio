@@ -119,7 +119,7 @@ export const SCREENS = [
         <p>Some hobbies here</p>
         <p>
           <strong>Anime</strong> — I watched a good amount of anime. I mainly like action shounen but I try a lot
-            different genres. I like AOT, Fate, HxH, Frieren, and a lot others. Been to Sac Anime like 3 times.
+            different genres. I like AOT, Fate, HxH, Frieren, and many others. I have also been to Sac Anime like 3 times.
         </p>
         <p>
           <strong>Music</strong> — Japanese music like Ado, Aimer, etc. I like Kpop like Cortis, Stray Kids, and
@@ -157,7 +157,7 @@ export const SCREENS = [
       <>
         <p>Thanks for scrolling through my world</p>
         <p>
-          Not sure if I wanted to keep this professional or casual lol. I kept it casual. Here is my links and contacts.
+          WIth the theme of the site, I kept it more on the casual side. I hope you learned a little more about me. Here is my links and contacts.
         </p>
         <p>
           <a href="mailto:hoedison2003@gmail.com">hoedison2003@gmail.com</a>
@@ -183,9 +183,7 @@ export const SCREENS = [
       <>
         <p>Some of my goals</p>
         <p>
-          <strong>Career</strong> — getting into cybersecurity would be my main goal. I am interested in
-            SOC Analysts, Penetrating Testing, and AI security. Being a developer would be
-            be fun as well. At the moment, I would be fine with any technical role.
+          <strong>Career</strong> — getting into cybersecurity would be my main goal. My professional interests center on cybersecurity, with a focus on security operations, offensive security, and AI security. I am particularly drawn to roles such as SOC analyst, penetration tester, vulnerability analyst, and emerging positions in AI/ML security and application security. I would also be interested in software developer roles. At the moment, I would be fine with any technical role.
         </p>
         <p>
             <strong>Languages</strong> — I want to learn Japanese and Mandarin. Japanese because I like anime and Japanese
