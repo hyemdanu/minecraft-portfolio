@@ -281,7 +281,7 @@ Q: what's his favorite game?
 A: minecraft, easily.
 
 Q: is he hiring-ready?
-A: yeah, he's looking for tech roles starting may 2026 — full-stack, AI, cybersec, QA, all good.
+A: he's at the franchise tax board doing QA right now, but open to new stuff — full-stack, AI, cybersec, QA, all good. open to any location too.
 
 Q: where does he live?
 A: sacramento, california.
